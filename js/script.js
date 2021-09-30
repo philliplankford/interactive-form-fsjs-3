@@ -5,6 +5,7 @@ const jobSelection = document.querySelector("#title");
 const colorSelection = document.querySelector("#color");
 const designSelection = document.querySelector("#design");
 const activityCost = document.querySelector(".activities-cost");
+const paymentSelection = document.querySelector("#payment");
 
 const activities = document.querySelectorAll(".activites input");
 const jsPunColors = document.querySelectorAll("option[data-theme='js puns']");
@@ -34,10 +35,18 @@ function updateColorOptions() {
     };
 }
 
+function hidePaymentOptions() {
+    document.querySelector("#credit-card").style.display = "none";
+    document.querySelector("#paypal").style.display = "none";
+    document.querySelector("#bitcoin").style.display = "none";
+    document.querySelector(`#${paymentSelection.value}`).style.display = "block";
+}
+
 /* === INIT === */
 nameInput.focus();
 otherJob.style.display = "none";
 colorSelection.disabled = true;
+hidePaymentOptions();
 
 /* === LISTENERS === */
 jobSelection.addEventListener("change", (e) => {
@@ -61,3 +70,5 @@ document.querySelector("#activities").addEventListener( "change", (e) => {
     }
     activityCost.innerHTML = `Total: $${totalCost}`;
 });
+
+paymentSelection.addEventListener( "change", hidePaymentOptions);
