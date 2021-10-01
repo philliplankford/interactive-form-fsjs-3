@@ -23,7 +23,7 @@ let totalCost = 0;
 
 /* === FUNCTIONS === */
 function updateColorOptions() {
-    if (designSelection.value = "js puns") {
+    if (designSelection.value === "js puns") {
         colorSelection.innerHTML = 
         `
         <option selected hidden>Select a design theme above</option>
@@ -129,7 +129,7 @@ function checkCVV() {
     };
     return valid;
 }
-
+// reference: https://gomakethings.com/how-to-get-all-of-an-elements-siblings-with-vanilla-js/
 const getSiblings = function (element) {
     let siblings = [];
     let sibling = element.parentNode.firstChild;
@@ -140,7 +140,6 @@ const getSiblings = function (element) {
         }
         sibling = sibling.nextSibling;
     }
-
     return siblings;
 };
 
@@ -178,6 +177,7 @@ document.querySelector("#activities").addEventListener("change", (e) => {
         });
     } else {
         totalCost -= parseInt(e.target.getAttribute("data-cost"));
+        
         const otherActivities = getSiblings(e.target.parentNode);
         otherActivities.forEach(label => {
             const element = label.querySelector("input").getAttribute("data-day-and-time");
@@ -192,8 +192,7 @@ document.querySelector("#activities").addEventListener("change", (e) => {
 
 paymentSelection.addEventListener("change", hidePaymentOptions);
 
-// focus doesn't bubble up focusin does
-document.querySelector("#activities").addEventListener("focusin", (e) => {
+document.querySelector("#activities").addEventListener("focusin", (e) => { // focus doesn't bubble up focusin does
         e.target.parentElement.classList.add("focus");
 });
 
