@@ -167,21 +167,27 @@ designSelection.addEventListener("change", () => {
 document.querySelector("#activities").addEventListener("change", (e) => {
     if (e.target.checked) {
         totalCost += parseInt(e.target.getAttribute("data-cost"));
+
+        const otherActivities = getSiblings(e.target.parentNode);
+        otherActivities.forEach(label => {
+            const element = label.querySelector("input").getAttribute("data-day-and-time");
+            const selected = e.target.getAttribute("data-day-and-time");
+            if (element === selected) {
+                label.querySelector("input").disabled = true;
+            }
+        });
     } else {
         totalCost -= parseInt(e.target.getAttribute("data-cost"));
+        const otherActivities = getSiblings(e.target.parentNode);
+        otherActivities.forEach(label => {
+            const element = label.querySelector("input").getAttribute("data-day-and-time");
+            const selected = e.target.getAttribute("data-day-and-time");
+            if (element === selected) {
+                label.querySelector("input").disabled = false;
+            }
+        });
     }
     activityCost.innerHTML = `Total: $${totalCost}`;
-
-    const otherActivities = getSiblings(e.target.parentNode);
-    otherActivities.forEach(label => {
-        const element = label.querySelector("input").getAttribute("data-day-and-time");
-        const selected = e.target.getAttribute("data-day-and-time");
-        if (element === selected) {
-            label.querySelector("input").disabled = true;
-        } else {
-            label.querySelector("input").disabled = false;
-        }
-    });
 });
 
 paymentSelection.addEventListener("change", hidePaymentOptions);
@@ -218,23 +224,3 @@ form.addEventListener("submit", (e) => {
         e.preventDefault();
       }
 });
-
-/* === FILTER ACTIVITIES === */
-
-
-// getSiblings
-
-// function pullTimes(element){
-
-//     const activities = document.querySelectorAll("input[data-day-and-time]");
-
-//     const string = element.getAttribute("data-day-and-time");
-//     const numbers = string.match(/(\d+)/);
-
-//     activities.forEach(activity) {
-//         const string = activity.getAttribute("data-day-and-time");
-//         const numbers = string.match(/(\d+)/);
-//         if (numbers[0] === )
-//     };
-
-// };
