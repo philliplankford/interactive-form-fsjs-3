@@ -52,14 +52,14 @@ function hidePaymentOptions() {
 /* === VALIDATION FUNCTIONS === */
 function validationFail(element) {
     const parent = element.parentElement;
-    parent.className += " not-valid";
+    parent.classList.add("not-valid");
     parent.classList.remove("valid");
     parent.lastElementChild.style.display = "block";
 }
 
 function validationPass(element) {
     const parent = element.parentElement;
-    parent.className += " valid";
+    parent.classList.add("valid");
     parent.classList.remove("not-valid");
     parent.lastElementChild.style.display = "none";
 }
@@ -71,11 +71,6 @@ function checkName() {
         validationPass(nameInput);
     } else {
         validationFail(nameInput);
-        if (nameInput.value === ""){
-            document.querySelector("#name-hint").innerHTML = "Name field cannot be blank";
-        } else {
-            document.querySelector("#name-hint").innerHTML = "Name field must be letters only";
-        }
     };
     return valid;
 }
@@ -92,12 +87,13 @@ function checkEmail() {
 
 function checkRegistration() {
     const checkedBoxes = document.querySelectorAll("#activities input[type='checkbox']:checked");
-    if (checkedBoxes.length) {
+    if (checkedBoxes.length > 0) {
         validationPass(activityList);
+        return true;
     } else {
         validationFail(activityList);
+        return false;
     };
-    return checkedBoxes;
 }
 
 function checkCardNum() {
@@ -106,6 +102,11 @@ function checkCardNum() {
         validationPass(cardNumber);
     } else {
         validationFail(cardNumber);
+        if (/[^0-9.]+/g.test(cardNumber.value)){
+            document.querySelector("#cc-hint").innerHTML = "This field can only contain numbers";
+        } else if (cardNumber.value.length > 16 || cardNumber.value.length < 13) {
+            document.querySelector("#cc-hint").innerHTML = "Credit card number must be between 13 - 16 digits";
+        }
     };
     return valid;
 }
@@ -129,6 +130,17 @@ function checkCVV() {
     };
     return valid;
 }
+
+function scheduleConflicts(bool, target, collection) {
+    collection.forEach(label => {
+        const element = label.querySelector("input").getAttribute("data-day-and-time");
+        const selected = target.getAttribute("data-day-and-time");
+        if (element === selected) {
+            label.querySelector("input").disabled = bool;
+        }
+    });
+}
+
 // reference: https://gomakethings.com/how-to-get-all-of-an-elements-siblings-with-vanilla-js/
 const getSiblings = function (element) {
     let siblings = [];
@@ -166,26 +178,12 @@ designSelection.addEventListener("change", () => {
 document.querySelector("#activities").addEventListener("change", (e) => {
     if (e.target.checked) {
         totalCost += parseInt(e.target.getAttribute("data-cost"));
-
-        const otherActivities = getSiblings(e.target.parentNode);
-        otherActivities.forEach(label => {
-            const element = label.querySelector("input").getAttribute("data-day-and-time");
-            const selected = e.target.getAttribute("data-day-and-time");
-            if (element === selected) {
-                label.querySelector("input").disabled = true;
-            }
-        });
+        const otherActivities = getSiblings(e.target.parentNode);      
+        scheduleConflicts(true, e.target, otherActivities);
     } else {
         totalCost -= parseInt(e.target.getAttribute("data-cost"));
-        
         const otherActivities = getSiblings(e.target.parentNode);
-        otherActivities.forEach(label => {
-            const element = label.querySelector("input").getAttribute("data-day-and-time");
-            const selected = e.target.getAttribute("data-day-and-time");
-            if (element === selected) {
-                label.querySelector("input").disabled = false;
-            }
-        });
+        scheduleConflicts(false, e.target, otherActivities);
     }
     activityCost.innerHTML = `Total: $${totalCost}`;
 });
@@ -202,6 +200,8 @@ document.querySelector("#activities").addEventListener("focusout", (e) => {
 
 nameInput.addEventListener("keyup", checkName);
 
+cardNumber.addEventListener("keyup", checkCardNum);
+
 /* === SUBMISSION === */
 form.addEventListener("submit", (e) => {
     if (!checkName()) {
@@ -213,13 +213,15 @@ form.addEventListener("submit", (e) => {
     if (!checkRegistration()) {
         e.preventDefault();
       }
-    if (!checkCardNum()) {
-        e.preventDefault();
-      }
-    if (!checkZip()) {
-        e.preventDefault();
-      }
-    if (!checkCVV()) {
-        e.preventDefault();
-      }
+    if (paymentSelection.value === "credit-card") {
+        if (!checkCardNum()) {
+            e.preventDefault();
+        }
+        if (!checkZip()) {
+            e.preventDefault();
+        }
+        if (!checkCVV()) {
+            e.preventDefault();
+        }
+    }
 });
