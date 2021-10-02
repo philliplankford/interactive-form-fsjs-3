@@ -141,19 +141,18 @@ function scheduleConflicts(bool, target, collection) {
     });
 }
 
-// reference: https://gomakethings.com/how-to-get-all-of-an-elements-siblings-with-vanilla-js/
 const getSiblings = function (element) {
     let siblings = [];
     let sibling = element.parentNode.firstChild;
 
-    while (sibling) {
+    while (sibling) { // push all sibling elements that are not target elements into an array
         if (sibling.nodeType === 1 && sibling !== element) {
             siblings.push(sibling);
         }
         sibling = sibling.nextSibling;
     }
     return siblings;
-};
+}; // reference: https://gomakethings.com/how-to-get-all-of-an-elements-siblings-with-vanilla-js/
 
 /* === INIT === */
 nameInput.focus();
@@ -194,7 +193,7 @@ document.querySelector("#activities").addEventListener("focusin", (e) => { // fo
         e.target.parentElement.classList.add("focus");
 });
 
-document.querySelector("#activities").addEventListener("focusout", (e) => {
+document.querySelector("#activities").addEventListener("focusout", (e) => { // focusout bubbles up
     document.querySelector(".focus").classList.remove("focus");
 });
 
